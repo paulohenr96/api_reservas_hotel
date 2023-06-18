@@ -44,7 +44,8 @@ public class ReservaController {
 		return ResponseEntity.ok(reservaService.getAll(PageRequest.of(page,size)));
 	}
 	@GetMapping("/pordata/")
-	public ResponseEntity<Page<ReservaDTO>> getAllReservasByData(@RequestParam(name = "data") String data,
+	public ResponseEntity<Page<ReservaDTO>> getAllReservasByData(
+			@RequestParam(name = "data") String data,
 			@RequestParam(name="page",defaultValue = "0") Integer page,
 			@RequestParam(name="size",defaultValue="5") Integer size){
 		return ResponseEntity.ok(reservaService.getAll(data,PageRequest.of(page,size)));

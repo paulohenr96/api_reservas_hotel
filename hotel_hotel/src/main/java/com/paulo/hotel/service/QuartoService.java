@@ -62,11 +62,11 @@ public class QuartoService {
 		return quartoRepository.findAll(pageRequest).map(Mapper::quartoToDTO);
 	}
 
-	public Quarto getQuartoById(Long idQuarto) {
+	public QuartoDTO getQuartoById(Long idQuarto) {
 		// TODO Auto-generated method stub
 		
 		
-		return quartoRepository.findById(idQuarto)
+		return quartoRepository.findById(idQuarto).map(Mapper::quartoToDTO)
 				.orElseThrow(()-> new QuartoNotFoundException(idQuarto));
 	}
 

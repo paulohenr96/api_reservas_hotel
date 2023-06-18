@@ -43,13 +43,14 @@ public class QuartoServiceTest {
 	QuartoRepository quartoRepository;
 
 	Quarto quarto;
+	QuartoDTO quartoDTO;
 	List<Quarto> lista;
 	Page<Quarto> pagina;
 
 	@BeforeEach
 	public void setUp() {
 		quarto = new Quarto(1L);
-
+		quartoDTO=new QuartoDTO(1L);
 		lista = List.of(new Quarto(2L), new Quarto(3L), new Quarto(5L));
 		pagina = new PageImpl<>(lista);
 	}
@@ -63,10 +64,10 @@ public class QuartoServiceTest {
 		when(quartoRepository.findById(2L)).thenReturn(Optional.of(quarto));
 		
 		//pegnado a saida real do service
-		Quarto quartoById = service.getQuartoById(2L);
+		QuartoDTO quartoById = service.getQuartoById(2L);
 		
 		//verificando se a saida real é igual a saida ideal
-		assertEquals(quartoById, quarto);
+		assertEquals(quartoById, Mapper.quartoToDTO(quarto));
 
 		verify(quartoRepository).findById(2L);
 //		
@@ -128,8 +129,8 @@ public class QuartoServiceTest {
 
 		
 		
-		Quarto saidaReal = service.getQuartoById(idQuarto);
-		assertEquals(quarto, saidaReal);
+		QuartoDTO saidaReal = service.getQuartoById(idQuarto);
+		assertEquals(quartoDTO, saidaReal);
 
 		verify(quartoRepository).findById(idQuarto);
 	}

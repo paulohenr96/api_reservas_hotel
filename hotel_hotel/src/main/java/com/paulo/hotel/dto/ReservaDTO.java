@@ -15,7 +15,6 @@ public class ReservaDTO {
 	@NotNull(message = "Insira a data para a reserva.")
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private Date data;
-	
 	private Long quarto;
 	@NotNull(message = "Insira o nome do responsavel pela reserva.")
 	private String nome;

@@ -3,6 +3,8 @@ package com.paulo.hotel.controller;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -35,7 +37,7 @@ public class QuartoController {
 	}
 
 	@PostMapping
-	public ResponseEntity<String> salvarQuarto(@RequestBody QuartoDTO quarto) {
+	public ResponseEntity<String> salvarQuarto(@Valid @RequestBody QuartoDTO quarto) {
 		return new ResponseEntity<String>(quartoService.salvarQuarto(quarto), HttpStatus.OK);
 
 	}
@@ -61,8 +63,8 @@ public class QuartoController {
 	}
 
 	@GetMapping("{idQuarto}")
-	public ResponseEntity<Quarto> getQuartoById(@PathVariable Long idQuarto) {
-		return new ResponseEntity<Quarto>(quartoService.getQuartoById(idQuarto), HttpStatus.OK);
+	public ResponseEntity<QuartoDTO> getQuartoById(@PathVariable Long idQuarto) {
+		return new ResponseEntity<QuartoDTO>(quartoService.getQuartoById(idQuarto), HttpStatus.OK);
 
 	}
 
