@@ -1,6 +1,7 @@
 package com.paulo.hotel.dto;
 
 import java.util.Date;
+import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
@@ -19,6 +20,15 @@ public class ReservaDTO {
 	@NotNull(message = "Insira o nome do responsavel pela reserva.")
 	private String nome;
 	
+	public ReservaDTO(Long l) {
+		// TODO Auto-generated constructor stub
+		this.id=l;
+	}
+	public ReservaDTO() {
+		// TODO Auto-generated constructor stub
+	}
+	
+
 	public Long getQuarto() {
 		return quarto;
 	}
@@ -43,4 +53,21 @@ public class ReservaDTO {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ReservaDTO other = (ReservaDTO) obj;
+		return Objects.equals(id, other.id);
+	}
+	
+	
 }

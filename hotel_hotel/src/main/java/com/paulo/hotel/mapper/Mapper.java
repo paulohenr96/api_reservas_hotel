@@ -13,9 +13,18 @@ public class Mapper {
 		if (reserva.getId() != null) {
 			reservaDTO.setId(reserva.getId());
 		}
-		reservaDTO.setQuarto(reserva.getQuarto().getId());
-		reservaDTO.setData(reserva.getData());
-		reservaDTO.setNome(reserva.getNome());
+		if (reserva.getQuarto()!=null) {
+			reservaDTO.setQuarto(reserva.getQuarto().getId());
+
+		}
+		if (reserva.getData()!=null) {
+			reservaDTO.setData(reserva.getData());
+
+		}
+		if (reserva.getNome()!=null && !reserva.getNome().trim().isEmpty()) {
+			reservaDTO.setNome(reserva.getNome());
+
+		}
 
 		return reservaDTO;
 	}
@@ -28,7 +37,10 @@ public class Mapper {
 		}
 //		reserva.setQuarto(quarto);
 		reserva.setData(reservaDTO.getData());
-		reserva.setNome(reservaDTO.getNome());
+		if (reservaDTO.getNome()!=null && !reservaDTO.getNome().trim().isEmpty()) {
+			reserva.setNome(reservaDTO.getNome());
+
+		}
 		return reserva;
 	}
 	

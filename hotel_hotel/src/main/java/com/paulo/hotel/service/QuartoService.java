@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import com.paulo.hotel.dto.PaginacaoDTO;
 import com.paulo.hotel.dto.QuartoDTO;
 import com.paulo.hotel.dto.ReservaDTO;
+import com.paulo.hotel.exception.QuartoNotFoundException;
 import com.paulo.hotel.exception.UserNotFoundException;
 import com.paulo.hotel.mapper.Mapper;
 import com.paulo.hotel.model.Quarto;
@@ -47,10 +48,11 @@ public class QuartoService {
 
 	public String deletarQuarto(Long idQuarto) {
 		// TODO Auto-generated method stub
+		if (!quartoRepository.existsById(idQuarto)) {throw new QuartoNotFoundException(idQuarto);}
 		try {
 		quartoRepository.deleteById(idQuarto);
 		}catch(Exception e) {
-			throw new UserNotFoundException(idQuarto);
+			throw new RuntimeException("Erro ao deletar o quarto => "+e.getMessage());
 		}
 		return "";
 	}
@@ -65,7 +67,7 @@ public class QuartoService {
 		
 		
 		return quartoRepository.findById(idQuarto)
-				.orElseThrow(()-> new UserNotFoundException(idQuarto));
+				.orElseThrow(()-> new QuartoNotFoundException(idQuarto));
 	}
 
 	public String atualizarQuarto(Long idQuarto) {
@@ -82,13 +84,14 @@ public class QuartoService {
 			parse = new SimpleDateFormat("dd/MM/yyyy").parse(data);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
+			throw new RuntimeException(String.format("Data %s está no formato invalido", data));
 		}
 		
 		
 		
-		
-		return quartoRepository.quartosDisponiveisData(parse,PageRequest.of(page, size))
-				.map(Mapper::quartoToDTO);
+		Page<QuartoDTO> map = quartoRepository.quartosDisponiveisData(parse,PageRequest.of(page, size))
+		.map(Mapper::quartoToDTO);
+		return map;
 	}
 
 	

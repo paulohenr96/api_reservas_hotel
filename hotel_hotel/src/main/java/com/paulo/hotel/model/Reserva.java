@@ -28,6 +28,14 @@ public class Reserva {
 	
 	private String nome;
 	
+	public Reserva(Long l) {
+		// TODO Auto-generated constructor stub
+		this.id=l;
+	}
+	public Reserva() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public Date getData() {
 		return data;
 	}

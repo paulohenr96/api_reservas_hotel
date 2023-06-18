@@ -41,9 +41,10 @@ public class ReservaService {
 	public void novaReserva(ReservaDTO reserva, Long idQuarto) {
 		// TODO Auto-generated method stub
 		Reserva reservaExample = new Reserva();
+
 		reservaExample.setData(reserva.getData());
-		Quarto quarto2 = new Quarto(idQuarto);
-		reservaExample.setQuarto(quarto2);
+		reservaExample.setQuarto(new Quarto(idQuarto));
+
 		ExampleMatcher exampleMatcher = ExampleMatcher.matching();
 		Example<Reserva> example = Example.of(reservaExample, exampleMatcher);
 
@@ -74,11 +75,10 @@ public class ReservaService {
 
 	public void deleteReserva(Long id) {
 
-		try {
-			reservaRepository.deleteById(id);
-		} catch (IllegalArgumentException e) {
+		if (!reservaRepository.existsById(id)) {
 			throw new ReservaNotFoundException(id);
 		}
+		reservaRepository.deleteById(id);
 	}
 
 	public Page<ReservaDTO> getAll(String dataTxt, PageRequest pageRequest) {
@@ -87,7 +87,8 @@ public class ReservaService {
 			data = new SimpleDateFormat("dd/MM/yyyy").parse(dataTxt);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(String.format("A data %s e invalida", dataTxt));
+		
 		}
 
 		Reserva res = new Reserva();
@@ -95,7 +96,6 @@ public class ReservaService {
 		ExampleMatcher exampleMatcher = ExampleMatcher.matching().withMatcher("data", GenericPropertyMatchers.exact());
 
 		Example<Reserva> example = Example.of(res, exampleMatcher);
-		System.out.println("Pegando a data " + (dataTxt));
 		return reservaRepository.findAll(example, pageRequest).map(Mapper::reservaToDTO);
 	}
 
@@ -106,7 +106,6 @@ public class ReservaService {
 		ExampleMatcher exampleMatcher = ExampleMatcher.matching();
 
 		Example<Reserva> example = Example.of(res, exampleMatcher);
-		Page<Reserva> findAll = reservaRepository.findAll(example, pageRequest);
 		return reservaRepository.findAll(example, pageRequest).map(Mapper::reservaToDTO);
 	}
 }
