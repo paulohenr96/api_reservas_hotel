@@ -11,7 +11,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import com.paulo.hotel.dto.QuartoDTO;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
 @Entity
+@NoArgsConstructor
 public class Quarto {
 	
 	@Id
@@ -26,64 +37,9 @@ public class Quarto {
 	private List<Reserva> reservas;
 	
 	public Quarto(Long id) {
-		super();
 		this.id = id;
 	}
 
-	public Quarto() {
-		super();
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	
-
-	public String getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
-	}
-
-	public List<Reserva> getReservas() {
-		return reservas;
-	}
-
-	public void setReservas(List<Reserva> reservas) {
-		this.reservas = reservas;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Quarto other = (Quarto) obj;
-		return Objects.equals(id, other.id);
-	}
-
-	public Integer getCamas() {
-		return camas;
-	}
-
-	public void setCamas(Integer camas) {
-		this.camas = camas;
-	}
 	
 	
 }

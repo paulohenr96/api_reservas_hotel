@@ -35,7 +35,10 @@ public class Mapper {
 		if (reservaDTO.getId() != null) {
 			reserva.setId(reservaDTO.getId());
 		}
-//		reserva.setQuarto(quarto);
+		if (reservaDTO.getQuarto()!=null) {
+			reserva.setQuarto(new Quarto(reservaDTO.getQuarto()));
+
+		}
 		reserva.setData(reservaDTO.getData());
 		if (reservaDTO.getNome()!=null && !reservaDTO.getNome().trim().isEmpty()) {
 			reserva.setNome(reservaDTO.getNome());

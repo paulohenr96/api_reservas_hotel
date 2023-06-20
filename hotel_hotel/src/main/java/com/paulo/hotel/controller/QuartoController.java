@@ -1,8 +1,5 @@
 package com.paulo.hotel.controller;
 
-import java.util.Date;
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -19,10 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.paulo.hotel.dto.PaginacaoDTO;
 import com.paulo.hotel.dto.QuartoDTO;
-import com.paulo.hotel.dto.ReservaDTO;
-import com.paulo.hotel.model.Quarto;
 import com.paulo.hotel.service.QuartoService;
 
 @Controller
@@ -70,7 +64,7 @@ public class QuartoController {
 
 	@PutMapping("{idQuarto}")
 	public ResponseEntity<String> atualizarQuarto(@PathVariable Long idQuarto,@RequestBody QuartoDTO novoQuarto) {
-		return new ResponseEntity<String>(quartoService.atualizarQuarto(idQuarto), HttpStatus.OK);
+		return new ResponseEntity<String>(quartoService.atualizarQuarto(idQuarto,novoQuarto), HttpStatus.OK);
 
 	}
 	

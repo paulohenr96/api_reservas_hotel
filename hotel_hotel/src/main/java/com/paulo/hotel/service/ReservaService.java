@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Example;
@@ -40,20 +41,11 @@ public class ReservaService {
 
 	public void novaReserva(ReservaDTO reserva, Long idQuarto) {
 		// TODO Auto-generated method stub
-		Reserva reservaExample = new Reserva();
 
-		reservaExample.setData(reserva.getData());
-		reservaExample.setQuarto(new Quarto(idQuarto));
-
-		ExampleMatcher exampleMatcher = ExampleMatcher.matching();
-		Example<Reserva> example = Example.of(reservaExample, exampleMatcher);
-
-		boolean existsReserva = reservaRepository.exists(example);
-
-		if (existsReserva) {
+		if (reservaRepository.existsReserva(idQuarto, reserva.getData())) {
 			throw new QuartoReservadoException(idQuarto);
 		}
-
+		;
 		Reserva novaReserva = Mapper.dtotoReserva(reserva);
 		Quarto quarto = quartoRepository.findById(idQuarto).orElseThrow(() -> new QuartoNotFoundException(idQuarto));
 		novaReserva.setQuarto(quarto);
@@ -88,7 +80,7 @@ public class ReservaService {
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(String.format("A data %s e invalida", dataTxt));
-		
+
 		}
 
 		Reserva res = new Reserva();
@@ -107,5 +99,47 @@ public class ReservaService {
 
 		Example<Reserva> example = Example.of(res, exampleMatcher);
 		return reservaRepository.findAll(example, pageRequest).map(Mapper::reservaToDTO);
+	}
+
+	public String atualizaReserva(Long idReserva, ReservaDTO reservaNova) {
+
+		Optional<Reserva> optional = reservaRepository.findById(idReserva);
+		Reserva reserva = new Reserva();
+
+		if (optional.isPresent()) {
+			reserva = optional.get();
+			reserva.setData(reservaNova.getData());
+			reserva.setNome(reservaNova.getNome());
+			if (reservaNova.getQuarto() != null && reservaNova.getQuarto() != reserva.getQuarto().getId()) {
+				Long quarto = reservaNova.getQuarto();
+				
+
+				reserva.setQuarto(
+						quartoRepository.findById(quarto).orElseThrow(() -> new QuartoNotFoundException(quarto)));
+				
+				if (reservaRepository.existsReserva(quarto, reserva.getData())) {
+					throw new QuartoReservadoException(quarto);
+				}
+
+			}
+
+		} else {
+			reserva = Mapper.dtotoReserva(reservaNova);
+			Long quarto = reserva.getQuarto().getId();
+
+			
+			reserva.setQuarto(quartoRepository.findById(quarto).orElseThrow(() -> new QuartoNotFoundException(quarto)));
+			if (reservaRepository.existsReserva(quarto, reserva.getData())) {
+				throw new QuartoReservadoException(quarto);
+			};
+		}
+
+		if (reserva.getQuarto() == null) {
+			throw new RuntimeException("Insira o quarto.");
+
+		}
+		reservaRepository.save(reserva);
+
+		return "Operacao Realizada com Sucesso";
 	}
 }

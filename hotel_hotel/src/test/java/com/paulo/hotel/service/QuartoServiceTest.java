@@ -3,6 +3,7 @@ package com.paulo.hotel.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -190,6 +191,25 @@ public class QuartoServiceTest {
 		assertThrows(RuntimeException.class,()->service.findAllQuartosDisponiveis(data, 0, 5));
 		
 
+	}
+	
+	@Test
+	void atualizarQuartoSucesso() {
+		Long id=2L;
+		
+		QuartoDTO quartoParaAtualizar=new QuartoDTO();
+		
+		quartoParaAtualizar.setTipo("normal");
+		quartoParaAtualizar.setCamas(4);
+		Quarto q = Mapper.dtoToQuarto(quartoParaAtualizar);
+		q.setId(2L);
+		when(quartoRepository.findById(2L)).thenReturn(Optional.of(q));
+		
+		for (int i=0;i<5;i++) {
+			service.atualizarQuarto(id, quartoParaAtualizar);
+			
+		}
+		verify(quartoRepository,times(5)).save(q);
 	}
 	
 	

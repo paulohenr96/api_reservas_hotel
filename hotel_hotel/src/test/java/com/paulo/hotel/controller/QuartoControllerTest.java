@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -132,6 +134,25 @@ public class QuartoControllerTest {
 		mockMvc.perform(get("/quartos/1"))
 				.andExpect(status().isOk())
 	            .andExpect(jsonPath("$.id").value(2));
+		
+	}
+	@Test
+	void atualizaQuartoComSucesso() throws Exception{	
+		Long id=1L;
+		QuartoDTO quartoParaAtualizar=new QuartoDTO();
+		
+		quartoParaAtualizar.setCamas(4);
+		quartoParaAtualizar.setTipo("normal");
+		
+		when(service.atualizarQuarto(id,quartoParaAtualizar)).thenReturn("Operacao Realizada com Sucesso.");
+		
+		
+		
+		mockMvc.perform(put("/quartos/"+id)
+				.contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(quartoParaAtualizar)))
+				.andExpect(status().isOk())
+	            .andExpect(content().string("Operacao Realizada com Sucesso."));
 		
 	}
 	

@@ -15,5 +15,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long>{
 
 	
 	List<Reserva> findAllByData(Date data);
+
+	@Query(value = "select (select count(1)  from reserva where quarto_id=:idQuarto AND data=:data) >0 as boolean",nativeQuery = true)
+	boolean existsReserva(Long idQuarto, Date data);
 	
 }
