@@ -314,7 +314,7 @@ public class ReservaServiceTest {
 	}
 	
 	@Test
-	void atualizaReservaExistenteThrowsQuartoReservadoException() {
+	void atualizaReservaInexistenteThrowsQuartoReservadoException() {
 		Long idReserva=2L;
 		ReservaDTO reservaNova=new ReservaDTO();
 		reservaNova.setQuarto(1L);
@@ -324,6 +324,30 @@ public class ReservaServiceTest {
 		
 		when(reservaRepository.existsReserva(1L,reservaNova.getData())).thenReturn(true);
 		when(reservaRepository.findById(anyLong())).thenReturn(Optional.empty());
+		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(2L)));
+		
+		
+		assertThrows(QuartoReservadoException.class,()->service.atualizaReserva(idReserva, reservaNova));
+		verify(reservaRepository).existsReserva(1L,reservaNova.getData());
+		verify(reservaRepository).findById(idReserva);
+		verify(quartoRepository).findById(1L);
+		verifyNoMoreInteractions(reservaRepository);
+
+
+		
+	}
+	
+	@Test
+	void atualizaReservaExistenteThrowsQuartoReservadoException() {
+		Long idReserva=2L;
+		ReservaDTO reservaNova=new ReservaDTO();
+		reservaNova.setQuarto(1L);
+		reservaNova.setData(new Date());
+		Reserva reservaAntiga=new Reserva(idReserva);
+		reservaAntiga.setQuarto(new Quarto(2L));
+		
+		when(reservaRepository.existsReserva(1L,reservaNova.getData())).thenReturn(true);
+		when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reservaAntiga));
 		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(2L)));
 		
 		
