@@ -28,6 +28,9 @@ Siga as etapas abaixo para executar o projeto:
 4. Inicie o servidor web.
 5. Acesse os endpoints fornecidos pelos controllers usando um cliente HTTP.
 
+## Autenticação 
+Esta api possui autenticação JWT. A classe JWTCreator possui dois métodos estáticos. O primeiro tem a função de criar um token novo e o segundo tem a função de autenticar o token inserido pelo usuario e retornar um objeto contendo o username e as roles do usuario. O Filtro JWTFilter é ativado a cada resuisição do usuário para avaliar a autenticidade do token.
+
 ## Controllers
 
 ### QuartoController
@@ -52,6 +55,15 @@ O ReservaController fornece os seguintes endpoints para gerenciar as reservas:
 - **GET /reservas/{idReserva}**: Retorna os detalhes de uma reserva específica com base no ID fornecido.
 - **DELETE /reservas/{idReserva}**: Deleta uma reserva com base no ID fornecido.
 - **PUT /reservas/{idReserva}**: Atualiza os detalhes de uma reserva específica com base no ID fornecido.
+### LoginController
+
+O login Controller possui apenas um endpoint.
+- **POST /login**: Recebe um dto contendo o username e a password e retorna um DTO contendo o token,username e data de expiração.
+
+### SWAGGER
+A aplicação contém o swagger para facilitar os testes. Para usa-lo é recomendado desabilitar o token do JWT no arquivo de configuração do Spring Security (WebConfigSecurity)
+![image](https://github.com/paulohenr96/api_reservas_hotel/assets/89654592/aa67c26d-2a8a-42b4-a66f-c7de39fb7b1e)
+
 
 ## Testes unitários
 
