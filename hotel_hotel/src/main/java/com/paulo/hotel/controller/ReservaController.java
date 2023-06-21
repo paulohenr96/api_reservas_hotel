@@ -22,8 +22,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.paulo.hotel.dto.ReservaDTO;
 import com.paulo.hotel.service.ReservaService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
 @Controller
 @RequestMapping("reservas")
+@Api(tags = "Operações CRUD relacionada às reservas de quartos.")
 public class ReservaController {
 
 	private final ReservaService reservaService;
@@ -36,7 +41,8 @@ public class ReservaController {
 	
 	
 	@PostMapping
-	public ResponseEntity<String> novaReserva(@RequestParam Long idQuarto, @Valid @RequestBody ReservaDTO reserva){
+	@ApiOperation("Cadastrar novas reservas.")
+	public ResponseEntity<String> novaReserva(@RequestParam Long idQuarto,@ApiParam("Nova reserva.") @Valid @RequestBody ReservaDTO reserva){
 		reservaService.novaReserva(reserva,idQuarto);
 		return ResponseEntity.ok("");
 	}
@@ -45,6 +51,7 @@ public class ReservaController {
 	
 	
 	@GetMapping
+	@ApiOperation("Lista de todas as reservas.")
 	public ResponseEntity<Page<ReservaDTO>> getAllReservas(@RequestParam(name="page",defaultValue = "0") Integer page,
 															@RequestParam(name="size",defaultValue="5") Integer size){
 		return ResponseEntity.ok(reservaService.getAll(PageRequest.of(page,size)));
@@ -54,8 +61,9 @@ public class ReservaController {
 	
 	
 	@GetMapping("/pordata/")
+	@ApiOperation("Lista de todas as reservas em determinada data.")
 	public ResponseEntity<Page<ReservaDTO>> getAllReservasByData(
-			@RequestParam(name = "data") String data,
+			 @RequestParam(name = "data") String data,
 			@RequestParam(name="page",defaultValue = "0") Integer page,
 			@RequestParam(name="size",defaultValue="5") Integer size){
 		return ResponseEntity.ok(reservaService.getAll(data,PageRequest.of(page,size)));
@@ -65,7 +73,8 @@ public class ReservaController {
 	
 	
 	@GetMapping("/porquarto/{quarto}")
-	public ResponseEntity<Page<ReservaDTO>> getAllReservasByQuarto(@PathVariable Long quarto,
+	@ApiOperation("Lista de todas as reservas de determinado quarto.")
+	public ResponseEntity<Page<ReservaDTO>> getAllReservasByQuarto(@ApiParam("ID do quarto para ver as reservas.") @PathVariable Long quarto,
 			@RequestParam(name="page",defaultValue = "0") Integer page,
 			@RequestParam(name="size",defaultValue="5") Integer size){
 		return ResponseEntity.ok(reservaService.getAllByQuarto(quarto,PageRequest.of(page,size)));
@@ -74,6 +83,7 @@ public class ReservaController {
 	
 	
 	@GetMapping("{idReserva}")
+	@ApiOperation("Consultar alguma reserva em específico de acordo com o ID.")
 	public ResponseEntity<ReservaDTO> findByIdReserva(@PathVariable Long idReserva){
 		return ResponseEntity.ok(reservaService.findReservaById(idReserva));
 	}
@@ -82,6 +92,7 @@ public class ReservaController {
 	
 	
 	@DeleteMapping("{idReserva}")
+	@ApiOperation("Deletar alguma reserva.")
 	public ResponseEntity<String> deleteReserva(@PathVariable Long idReserva){
 		reservaService.deleteReserva(idReserva);
 		return ResponseEntity.ok("");
@@ -91,6 +102,7 @@ public class ReservaController {
 	
 	
 	@PutMapping("{idReserva}")
+	@ApiOperation("Atualização de reservas.")
 	public ResponseEntity<String> atualizaReserva(@PathVariable Long idReserva,
 												@RequestBody ReservaDTO reservaNova){
 		return new ResponseEntity<String>(reservaService.atualizaReserva(idReserva,

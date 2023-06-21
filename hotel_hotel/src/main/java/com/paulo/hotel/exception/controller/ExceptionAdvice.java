@@ -21,56 +21,63 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 import com.paulo.hotel.dto.ErroDTO;
+import com.paulo.hotel.exception.LoginNotFoundException;
 import com.paulo.hotel.exception.QuartoNotFoundException;
 import com.paulo.hotel.exception.QuartoReservadoException;
 import com.paulo.hotel.exception.ReservaNotFoundException;
 import com.paulo.hotel.exception.UserNotFoundException;
 
 @ControllerAdvice
-public class ExceptionAdvice extends ResponseEntityExceptionHandler{
+public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
-	
-
-	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		// TODO Auto-generated method stub
-		ErroDTO erros=new ErroDTO();
+		ErroDTO erros = new ErroDTO();
 		erros.setStatus(status.value());
-		erros.setErro(ex.getAllErrors().stream().map(e->e.getDefaultMessage()).collect(Collectors.toList()));
-		return new ResponseEntity<>(erros,HttpStatus.EXPECTATION_FAILED);
+		erros.setErro(ex.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList()));
+		return new ResponseEntity<>(erros, HttpStatus.EXPECTATION_FAILED);
 	}
-	
+
 	@ExceptionHandler(UserNotFoundException.class)
-	public ResponseEntity<ErroDTO> handleUserNotFoundException(UserNotFoundException e,HttpServletResponse r){
-		
-		ErroDTO erros=new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
-		
-		return new ResponseEntity<>(erros,HttpStatus.NOT_FOUND);
+	public ResponseEntity<ErroDTO> handleUserNotFoundException(UserNotFoundException e, HttpServletResponse r) {
+
+		ErroDTO erros = new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
+
+		return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
 	}
-	
+
 	@ExceptionHandler(ReservaNotFoundException.class)
-	public ResponseEntity<ErroDTO> handleReservaNotFoundException(ReservaNotFoundException e,HttpServletResponse r){
-		
-		ErroDTO erros=new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
-		
-		return new ResponseEntity<>(erros,HttpStatus.NOT_FOUND);
+	public ResponseEntity<ErroDTO> handleReservaNotFoundException(ReservaNotFoundException e, HttpServletResponse r) {
+
+		ErroDTO erros = new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
+
+		return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
 	}
+
 	@ExceptionHandler(QuartoReservadoException.class)
-	public ResponseEntity<ErroDTO> handleQuartoReservadoException(QuartoReservadoException e,HttpServletResponse r){
-		
-		ErroDTO erros=new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
-		
-		return new ResponseEntity<>(erros,HttpStatus.NOT_FOUND);
+	public ResponseEntity<ErroDTO> handleQuartoReservadoException(QuartoReservadoException e, HttpServletResponse r) {
+
+		ErroDTO erros = new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
+
+		return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
 	}
-	
+
 	@ExceptionHandler(QuartoNotFoundException.class)
-	public ResponseEntity<ErroDTO> handleQuartoNotFoundException(QuartoNotFoundException e,HttpServletResponse r){
-		
-		ErroDTO erros=new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
-		
-		return new ResponseEntity<>(erros,HttpStatus.NOT_FOUND);
+	public ResponseEntity<ErroDTO> handleQuartoNotFoundException(QuartoNotFoundException e, HttpServletResponse r) {
+
+		ErroDTO erros = new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
+
+		return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
 	}
-	
+
+	@ExceptionHandler(LoginNotFoundException.class)
+	public ResponseEntity<ErroDTO> handleLoginNotFoundException(LoginNotFoundException e, HttpServletResponse r) {
+
+		ErroDTO erros = new ErroDTO(HttpStatus.NOT_FOUND.value(), e.getMessage());
+
+		return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
+	}
+
 }
