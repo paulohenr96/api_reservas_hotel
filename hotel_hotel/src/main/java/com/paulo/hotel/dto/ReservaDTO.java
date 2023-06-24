@@ -1,5 +1,6 @@
 package com.paulo.hotel.dto;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -24,9 +25,14 @@ public class ReservaDTO {
 
 	private Long id;
 
-	@NotNull(message = "Insira a data para a reserva.")
+	@NotNull(message = "Insira a data para o checkin da reserva.")
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	private Date data;
+	private LocalDate checkinDate;
+	
+	@NotNull(message = "Insira a data para o checkout .")
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private LocalDate checkoutDate;
+
 	private Long quarto;
 	@NotNull(message = "Insira o nome do responsavel pela reserva.")
 	private String nome;
@@ -35,5 +41,15 @@ public class ReservaDTO {
 		// TODO Auto-generated constructor stub
 		this.id = l;
 	}
+
+	public ReservaDTO(Long id, LocalDate checkinDate, Long quarto, String nome) {
+		// TODO Auto-generated constructor stub
+		
+		this.id=id;
+		this.checkinDate=checkinDate;
+		this.quarto=quarto;
+		this.nome=nome;
+	}
+	
 
 }

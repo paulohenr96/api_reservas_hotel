@@ -2,10 +2,13 @@ package com.paulo.hotel.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.datetime.joda.LocalDateParser;
 import org.springframework.stereotype.Component;
 
 import com.paulo.hotel.dto.QuartoDTO;
@@ -70,18 +73,14 @@ public class QuartoService {
 		return "Operacao realizada com sucesso.";
 	}
 
-	public Page<QuartoDTO> findAllQuartosDisponiveis(String data, int page, int size) {
+	public Page<QuartoDTO> findAllQuartosDisponiveis(String datain,String dataout, int page, int size) {
 		// TODO Auto-generated method stub
+		LocalDate checkinDate=LocalDate.parse(datain, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		LocalDate checkoutDate=LocalDate.parse(dataout, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-		Date parse = new Date();
-		try {
-			parse = new SimpleDateFormat("dd/MM/yyyy").parse(data);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(String.format("Data %s está no formato invalido", data));
-		}
+		
 
-		Page<QuartoDTO> map = quartoRepository.quartosDisponiveisData(parse, PageRequest.of(page, size))
+		Page<QuartoDTO> map = quartoRepository.quartosDisponiveisData(checkinDate,checkoutDate, PageRequest.of(page, size))
 				.map(Mapper::quartoToDTO);
 		return map;
 	}

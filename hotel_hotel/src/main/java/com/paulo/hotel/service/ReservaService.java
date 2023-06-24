@@ -3,6 +3,7 @@ package com.paulo.hotel.service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class ReservaService {
 	public void novaReserva(ReservaDTO reserva, Long idQuarto) {
 		// TODO Auto-generated method stub
 
-		if (reservaRepository.existsReserva(idQuarto, reserva.getData())) {
+		if (reservaRepository.existsReserva(idQuarto, reserva.getCheckinDate(),reserva.getCheckoutDate())) {
 			throw new QuartoReservadoException(idQuarto);
 		}
 		;
@@ -74,17 +75,18 @@ public class ReservaService {
 	}
 
 	public Page<ReservaDTO> getAll(String dataTxt, PageRequest pageRequest) {
-		Date data = new Date();
-		try {
-			data = new SimpleDateFormat("dd/MM/yyyy").parse(dataTxt);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(String.format("A data %s e invalida", dataTxt));
-
-		}
+		 LocalDate data = LocalDate.now();
+//		try {
+//			data = new SimpleDateFormat("dd/MM/yyyy").parse(dataTxt);
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			throw new RuntimeException(String.format("A data %s e invalida", dataTxt));
+//
+//		}
+		 data=LocalDate.parse(dataTxt,DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
 		Reserva res = new Reserva();
-		res.setData(data);
+		res.setCheckinDate(data);
 		ExampleMatcher exampleMatcher = ExampleMatcher.matching().withMatcher("data", GenericPropertyMatchers.exact());
 
 		Example<Reserva> example = Example.of(res, exampleMatcher);
@@ -108,7 +110,7 @@ public class ReservaService {
 
 		if (optional.isPresent()) {
 			reserva = optional.get();
-			reserva.setData(reservaNova.getData());
+			reserva.setCheckinDate(reservaNova.getCheckinDate());
 			reserva.setNome(reservaNova.getNome());
 			if (reservaNova.getQuarto() != null && reservaNova.getQuarto() != reserva.getQuarto().getId()) {
 				Long quarto = reservaNova.getQuarto();
@@ -117,7 +119,7 @@ public class ReservaService {
 				reserva.setQuarto(
 						quartoRepository.findById(quarto).orElseThrow(() -> new QuartoNotFoundException(quarto)));
 				
-				if (reservaRepository.existsReserva(quarto, reserva.getData())) {
+				if (reservaRepository.existsReserva(quarto, reserva.getCheckinDate(),reserva.getCheckoutDate())) {
 					throw new QuartoReservadoException(quarto);
 				}
 
@@ -129,7 +131,7 @@ public class ReservaService {
 
 			
 			reserva.setQuarto(quartoRepository.findById(quarto).orElseThrow(() -> new QuartoNotFoundException(quarto)));
-			if (reservaRepository.existsReserva(quarto, reserva.getData())) {
+			if (reservaRepository.existsReserva(quarto, reserva.getCheckinDate(),reserva.getCheckoutDate())) {
 				throw new QuartoReservadoException(quarto);
 			};
 		}

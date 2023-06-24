@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,20 +75,22 @@ public class ReservaServiceTest {
 	@Test
 	void novaReserva() {
 
-		Date data = new Date();
+		LocalDate data = LocalDate.now();
+		LocalDate dataOut = LocalDate.now().plusDays(3L);
+
 		Long idQuarto = 2L;
 
-		reservaDTO.setData(data);
+		reservaDTO.setCheckinDate(data);
 		reservaDTO.setNome("Nome Teste");
 
 		
 		
-		when(reservaRepository.existsReserva(idQuarto,data)).thenReturn(false);
+		when(reservaRepository.existsReserva(idQuarto,data,dataOut)).thenReturn(false);
 		when(quartoRepository.findById(idQuarto)).thenReturn(Optional.of(new Quarto(idQuarto)));
 
 		service.novaReserva(reservaDTO, idQuarto);
 
-		verify(reservaRepository).existsReserva(idQuarto,data);
+		verify(reservaRepository).existsReserva(idQuarto,data,dataOut);
 		verify(quartoRepository).findById(anyLong());
 		verify(reservaRepository).save(any(Reserva.class));
 
@@ -96,13 +99,14 @@ public class ReservaServiceTest {
 	@Test
 	void novaReservaException() {
 
-		Date data = new Date();
+		LocalDate data = LocalDate.now();
 		Long idQuarto = 2L;
 
-		reservaDTO.setData(data);
+		reservaDTO.setCheckinDate(data);
 		reservaDTO.setNome("Nome Teste");
+		LocalDate dataOut = data.plusDays(3L);
 
-		when(reservaRepository.existsReserva(idQuarto,data)).thenReturn(true);
+		when(reservaRepository.existsReserva(idQuarto,data,dataOut)).thenReturn(true);
 		when(quartoRepository.findById(idQuarto)).thenReturn(Optional.of(new Quarto(idQuarto)));
 
 		assertThrows(QuartoReservadoException.class, () -> service.novaReserva(reservaDTO, idQuarto));
@@ -225,12 +229,13 @@ public class ReservaServiceTest {
 		Long idReserva=2L;
 		ReservaDTO reservaNova=new ReservaDTO();
 		reservaNova.setQuarto(1L);
-		reservaNova.setData(new Date());
+		reservaNova.setCheckinDate(LocalDate.now());
 		Reserva reservaAntiga=new Reserva(idReserva);
 		reservaAntiga.setQuarto(new Quarto(2L));
+		LocalDate dataOut = LocalDate.now().plusDays(3L);
+
 		
-		
-		when(reservaRepository.existsReserva(1L,reservaNova.getData())).thenReturn(false);
+		when(reservaRepository.existsReserva(1L,reservaNova.getCheckinDate(),dataOut)).thenReturn(false);
 
 		when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reservaAntiga));
 		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(1L)));
@@ -252,12 +257,13 @@ public class ReservaServiceTest {
 		Long idReserva=2L;
 		ReservaDTO reservaNova=new ReservaDTO();
 		reservaNova.setQuarto(1L);
-		reservaNova.setData(new Date());
+		reservaNova.setCheckinDate(LocalDate.now());
 		Reserva reservaSalva=new Reserva();
 		reservaSalva.setQuarto(new Quarto(1L));
+		LocalDate dataOut = LocalDate.now().plusDays(3L);
+
 		
-		
-		when(reservaRepository.existsReserva(1L,reservaNova.getData())).thenReturn(false);
+		when(reservaRepository.existsReserva(1L,reservaNova.getCheckinDate(),dataOut)).thenReturn(false);
 
 		when(reservaRepository.findById(anyLong())).thenReturn(Optional.empty());
 		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(1L)));
@@ -318,17 +324,18 @@ public class ReservaServiceTest {
 		Long idReserva=2L;
 		ReservaDTO reservaNova=new ReservaDTO();
 		reservaNova.setQuarto(1L);
-		reservaNova.setData(new Date());
+		reservaNova.setCheckinDate(LocalDate.now());
 		Reserva reservaAntiga=new Reserva(idReserva);
 		reservaAntiga.setQuarto(new Quarto(2L));
-		
-		when(reservaRepository.existsReserva(1L,reservaNova.getData())).thenReturn(true);
+		LocalDate dataOut = LocalDate.now().plusDays(3L);
+
+		when(reservaRepository.existsReserva(1L,reservaNova.getCheckinDate(),dataOut)).thenReturn(true);
 		when(reservaRepository.findById(anyLong())).thenReturn(Optional.empty());
 		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(2L)));
 		
 		
 		assertThrows(QuartoReservadoException.class,()->service.atualizaReserva(idReserva, reservaNova));
-		verify(reservaRepository).existsReserva(1L,reservaNova.getData());
+		verify(reservaRepository).existsReserva(1L,reservaNova.getCheckinDate(),dataOut);
 		verify(reservaRepository).findById(idReserva);
 		verify(quartoRepository).findById(1L);
 		verifyNoMoreInteractions(reservaRepository);
@@ -342,17 +349,18 @@ public class ReservaServiceTest {
 		Long idReserva=2L;
 		ReservaDTO reservaNova=new ReservaDTO();
 		reservaNova.setQuarto(1L);
-		reservaNova.setData(new Date());
+		reservaNova.setCheckinDate(LocalDate.now());
 		Reserva reservaAntiga=new Reserva(idReserva);
 		reservaAntiga.setQuarto(new Quarto(2L));
-		
-		when(reservaRepository.existsReserva(1L,reservaNova.getData())).thenReturn(true);
+		LocalDate dataOut = LocalDate.now().plusDays(3L);
+
+		when(reservaRepository.existsReserva(1L,reservaNova.getCheckinDate(),dataOut)).thenReturn(true);
 		when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reservaAntiga));
 		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(2L)));
 		
 		
 		assertThrows(QuartoReservadoException.class,()->service.atualizaReserva(idReserva, reservaNova));
-		verify(reservaRepository).existsReserva(1L,reservaNova.getData());
+		verify(reservaRepository).existsReserva(1L,reservaNova.getCheckinDate(),dataOut);
 		verify(reservaRepository).findById(idReserva);
 		verify(quartoRepository).findById(1L);
 		verifyNoMoreInteractions(reservaRepository);

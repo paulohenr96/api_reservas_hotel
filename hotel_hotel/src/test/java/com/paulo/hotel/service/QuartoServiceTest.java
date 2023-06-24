@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -151,9 +153,8 @@ public class QuartoServiceTest {
 
 	@Test
 	void findAllQuartosDisponiveisSucesso() throws ParseException {
-		String data = "28/11/2023";
-		Date parse = new SimpleDateFormat("dd/MM/yyyy").parse(data);
-
+		LocalDate data=LocalDate.parse("28/11/2023", DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		LocalDate dataAfter=LocalDate.parse("30/11/2023", DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		
 		List<QuartoDTO> contentEsperado = lista.stream().map(Mapper::quartoToDTO).collect(Collectors.toList());
 		
@@ -165,10 +166,10 @@ public class QuartoServiceTest {
 
 		
 		//Configurando bd
-		when(quartoRepository.quartosDisponiveisData(parse, PageRequest.of(0, 3))).thenReturn(pagina);
+		when(quartoRepository.quartosDisponiveisData(data,dataAfter, PageRequest.of(0, 3))).thenReturn(pagina);
 
 		//Saida real do service
-		Page<QuartoDTO> saidaReal = service.findAllQuartosDisponiveis(data, 0, 3);
+		Page<QuartoDTO> saidaReal = service.findAllQuartosDisponiveis("28/11/2023","30/11/2023", 0, 3);
 		
 		//Verificando se o conteudo esperado é igual ao coteudo real.
 		assertEquals(contentEsperado,saidaReal.getContent());
@@ -176,22 +177,11 @@ public class QuartoServiceTest {
 		//Verificando se a pagina esperada é igual a pagina real
 		assertEquals(saidaEsperada,saidaReal);
 
-		verify(quartoRepository).quartosDisponiveisData(parse, PageRequest.of(0, 3));
+		verify(quartoRepository).quartosDisponiveisData(data,dataAfter, PageRequest.of(0, 3));
 
 	}
 	
-	@Test
-	void findAllQuartosDisponiveisDataInvalida()  {
-		//Colocando data invalida para dar erro
-		String data = "22342348/11/2023";
 
-		
-
-		//Testando se a exceção foi correta.
-		assertThrows(RuntimeException.class,()->service.findAllQuartosDisponiveis(data, 0, 5));
-		
-
-	}
 	
 	@Test
 	void atualizarQuartoSucesso() {

@@ -13,28 +13,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import javax.annotation.security.RunAs;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paulo.hotel.dto.QuartoDTO;
+import com.paulo.hotel.repository.QuartoRepository;
 import com.paulo.hotel.service.QuartoService;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(QuartoController.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 public class QuartoControllerTest {
-	@InjectMocks
-	QuartoController controller;
+	
 	
 	@Autowired
 	MockMvc mockMvc;
@@ -42,6 +48,8 @@ public class QuartoControllerTest {
 	@MockBean
 	QuartoService service;
 
+	@Autowired
+	QuartoRepository repository;
 	
 	@Test
 	void salvarQuartoComSucesso() throws Exception {
@@ -63,11 +71,13 @@ public class QuartoControllerTest {
 	@Test
 	void deletarQuartoSucesso() throws Exception{
 		
-		when(service.deletarQuarto(anyLong())).thenReturn("");
+		Long id=5L;
+
+
+//		when(service.deletarQuarto(anyLong())).thenReturn("");
 		
 		
-		
-		mockMvc.perform(delete("/quartos/5")).andExpect(status().isOk());
+		mockMvc.perform(delete("/quartos/"+id)).andExpect(status().isOk());
 		
 	}
 	
@@ -98,7 +108,9 @@ public class QuartoControllerTest {
 		Page<QuartoDTO> pagina=new PageImpl<>(lista);
 		
 		String data="28/10/2023";
-		when(service.findAllQuartosDisponiveis(data,0,3)).thenReturn(pagina);
+		String dataOut="29/10/2023";
+
+		when(service.findAllQuartosDisponiveis(data,dataOut,0,3)).thenReturn(pagina);
 		
 		
 		
@@ -136,15 +148,14 @@ public class QuartoControllerTest {
 		quartoParaAtualizar.setCamas(4);
 		quartoParaAtualizar.setTipo("normal");
 		
-		when(service.atualizarQuarto(id,quartoParaAtualizar)).thenReturn("Operacao Realizada com Sucesso.");
 		
-		
+		when(service.atualizarQuarto(id, quartoParaAtualizar)).thenReturn("Operacao realizada com sucesso.");
 		
 		mockMvc.perform(put("/quartos/"+id)
 				.contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(quartoParaAtualizar)))
 				.andExpect(status().isOk())
-	            .andExpect(content().string("Operacao Realizada com Sucesso."));
+	            .andExpect(content().string("Operacao realizada com sucesso."));
 		
 	}
 	

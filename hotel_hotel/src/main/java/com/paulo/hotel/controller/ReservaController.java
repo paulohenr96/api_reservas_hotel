@@ -41,7 +41,7 @@ public class ReservaController {
 	
 	
 	@PostMapping
-	@ApiOperation("Cadastrar novas reservas.")
+	@ApiOperation("Cadastrar nova reserva.")
 	public ResponseEntity<String> novaReserva(@RequestParam Long idQuarto,@ApiParam("Nova reserva.") @Valid @RequestBody ReservaDTO reserva){
 		reservaService.novaReserva(reserva,idQuarto);
 		return ResponseEntity.ok("");
