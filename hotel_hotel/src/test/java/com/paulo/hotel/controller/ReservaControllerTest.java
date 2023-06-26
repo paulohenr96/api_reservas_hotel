@@ -1,27 +1,28 @@
 package com.paulo.hotel.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,11 +32,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.paulo.hotel.dto.ReservaDTO;
 import com.paulo.hotel.service.ReservaService;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(ReservaController.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 public class ReservaControllerTest {
 
 	@Autowired
@@ -48,8 +50,9 @@ public class ReservaControllerTest {
 	void novaReservaSucesso() throws Exception {
 
 		ReservaDTO reserva = new ReservaDTO(2L);
-		reserva.setData(new Date());
+		reserva.setCheckinDate(LocalDate.now());
 		reserva.setNome("Paulo");
+		reserva.setCheckoutDate(LocalDate.now().plusDays(8L));
 
 		Long id = 1L;
 		mockMvc.perform(post("/reservas").contentType(MediaType.APPLICATION_JSON).content(asJsonString(reserva))
@@ -114,21 +117,11 @@ public class ReservaControllerTest {
 		verify(service).deleteReserva(id);
 	}
 
-	@Test
-	void atualizaReservaComSucesso() throws Exception {
-		Long id = 1L;
-
-		ReservaDTO res = new ReservaDTO(2L, new Date(), null, "paulo henrique");
-		when(service.atualizaReserva(anyLong(),any(ReservaDTO.class))).thenReturn("Operacao Realizada com Sucesso");
-
-		mockMvc.perform(put("/reservas/" + id).contentType(MediaType.APPLICATION_JSON).content(asJsonString(res))
-
-		).andExpect(status().isOk()).andExpect(content().string("Operacao Realizada com Sucesso"));
-	}
-
 	private static String asJsonString(Object obj) {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
+	        objectMapper.registerModule(new JavaTimeModule());
+
 			return objectMapper.writeValueAsString(obj);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

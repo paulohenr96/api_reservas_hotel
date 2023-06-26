@@ -42,8 +42,6 @@ public class QuartoController {
 
 	}
 
-	
-	
 	@DeleteMapping("{idQuarto}")
 	@ApiOperation("Remove um quarto")
 	public ResponseEntity<String> deletarQuarto(@ApiParam("ID do quarto") @PathVariable Long idQuarto) {
@@ -53,17 +51,22 @@ public class QuartoController {
 
 	@GetMapping
 	@ApiOperation("Todos os quartos")
-	public ResponseEntity<Page<QuartoDTO>> findAllQuartos(@RequestParam(name="page",defaultValue = "0") Integer page,
-														@RequestParam(name="size",defaultValue = "5")Integer size) {
-		return new ResponseEntity<Page<QuartoDTO>>(quartoService.findAllQuartos(PageRequest.of(page,size)), HttpStatus.OK);
+	public ResponseEntity<Page<QuartoDTO>> findAllQuartos(@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "size", defaultValue = "5") Integer size) {
+		return new ResponseEntity<Page<QuartoDTO>>(quartoService.findAllQuartos(PageRequest.of(page, size)),
+				HttpStatus.OK);
 
 	}
-	@GetMapping("/disponiveis/")
+
+	@GetMapping("/disponiveis")
 	@ApiOperation("Todos os quartos disponiveis na data")
-	public ResponseEntity<Page<QuartoDTO>> findAllQuartosDisponiveis(@ApiParam("Data no formato dd/MM/yyyy") @RequestParam(name="data",required = true) String data,
-												@RequestParam(name="page",defaultValue = "0")Integer page,
-												@RequestParam(name="size",defaultValue = "5")Integer size) {
-		return new ResponseEntity<Page<QuartoDTO>>(quartoService.findAllQuartosDisponiveis(data,page,size), HttpStatus.OK);
+	public ResponseEntity<Page<QuartoDTO>> findAllQuartosDisponiveis(
+			@ApiParam("Data no formato dd/MM/yyyy") @RequestParam(name = "checkinDate", required = true) String checkinDate,
+			@RequestParam(name = "checkoutDate") String checkoutDate,
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "size", defaultValue = "5") Integer size) {
+		return new ResponseEntity<Page<QuartoDTO>>(
+				quartoService.findAllQuartosDisponiveis(checkinDate, checkoutDate, page, size), HttpStatus.OK);
 
 	}
 
@@ -76,12 +79,10 @@ public class QuartoController {
 
 	@PutMapping("{idQuarto}")
 	@ApiOperation("Atualiza o quarto")
-	public ResponseEntity<String> atualizarQuarto(@ApiParam("ID do quarto") @PathVariable Long idQuarto,@ApiParam("Novas informações do quarto") @RequestBody QuartoDTO novoQuarto) {
-		return new ResponseEntity<String>(quartoService.atualizarQuarto(idQuarto,novoQuarto), HttpStatus.OK);
+	public ResponseEntity<String> atualizarQuarto(@ApiParam("ID do quarto") @PathVariable Long idQuarto,
+			@ApiParam("Novas informações do quarto") @RequestBody QuartoDTO novoQuarto) {
+		return new ResponseEntity<String>(quartoService.atualizarQuarto(idQuarto, novoQuarto), HttpStatus.OK);
 
 	}
-	
 
-	
-	
 }

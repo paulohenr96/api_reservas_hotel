@@ -1,7 +1,10 @@
 package com.paulo.hotel.model;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 import com.paulo.hotel.dto.QuartoDTO;
 
@@ -29,8 +33,12 @@ public class Reserva {
 	private Long id;
 	
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	private Date data;
-
+	private LocalDate checkinDate;
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private LocalDate checkoutDate;
+	
+	@Column(precision = 10,scale = 2)
+	private BigDecimal valor;
 	
 	@ManyToOne
 	private Quarto quarto;

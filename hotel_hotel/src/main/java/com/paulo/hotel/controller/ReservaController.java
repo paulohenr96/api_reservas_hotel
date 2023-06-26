@@ -41,8 +41,10 @@ public class ReservaController {
 	
 	
 	@PostMapping
-	@ApiOperation("Cadastrar novas reservas.")
-	public ResponseEntity<String> novaReserva(@RequestParam Long idQuarto,@ApiParam("Nova reserva.") @Valid @RequestBody ReservaDTO reserva){
+	@ApiOperation("Cadastrar nova reserva.")
+	public ResponseEntity<String> novaReserva(
+			@RequestParam(name = "idQuarto") Long idQuarto,
+			@ApiParam("Nova reserva.") @Valid @RequestBody ReservaDTO reserva){
 		reservaService.novaReserva(reserva,idQuarto);
 		return ResponseEntity.ok("");
 	}
@@ -101,13 +103,6 @@ public class ReservaController {
 	
 	
 	
-	@PutMapping("{idReserva}")
-	@ApiOperation("Atualização de reservas.")
-	public ResponseEntity<String> atualizaReserva(@PathVariable Long idReserva,
-												@RequestBody ReservaDTO reservaNova){
-		return new ResponseEntity<String>(reservaService.atualizaReserva(idReserva,
-									reservaNova),HttpStatus.OK);	
-	}
 
 }
   
