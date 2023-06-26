@@ -16,7 +16,9 @@ public class TipoMapper {
 
 	public static TipoDTO toDTO(Tipo entity) {
 		TipoDTO tipo = new TipoDTO();
-
+		if (entity.getId()!=null) {
+			tipo.setId(entity.getId());
+		}
 		tipo.setNome(entity.getNome());
 		tipo.setPreco(entity.getPreco());
 

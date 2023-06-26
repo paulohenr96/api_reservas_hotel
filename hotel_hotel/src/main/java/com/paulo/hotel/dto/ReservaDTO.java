@@ -1,13 +1,11 @@
 package com.paulo.hotel.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.paulo.hotel.model.Quarto;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -33,10 +31,17 @@ public class ReservaDTO {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate checkoutDate;
 
+	
+
 	private Long quarto;
+	
+	
 	@NotNull(message = "Insira o nome do responsavel pela reserva.")
 	private String nome;
 
+	@NotNull(message = "Insira o valor da reserva.")
+	private BigDecimal valor;
+	
 	public ReservaDTO(Long l) {
 		// TODO Auto-generated constructor stub
 		this.id = l;

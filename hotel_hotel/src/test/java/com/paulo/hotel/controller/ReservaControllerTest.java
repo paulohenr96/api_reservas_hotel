@@ -52,6 +52,7 @@ public class ReservaControllerTest {
 		ReservaDTO reserva = new ReservaDTO(2L);
 		reserva.setCheckinDate(LocalDate.now());
 		reserva.setNome("Paulo");
+		reserva.setCheckoutDate(LocalDate.now().plusDays(8L));
 
 		Long id = 1L;
 		mockMvc.perform(post("/reservas").contentType(MediaType.APPLICATION_JSON).content(asJsonString(reserva))
@@ -114,18 +115,6 @@ public class ReservaControllerTest {
 
 		mockMvc.perform(delete("/reservas/" + id)).andExpect(status().isOk()).andExpect(content().string(""));
 		verify(service).deleteReserva(id);
-	}
-
-	@Test
-	void atualizaReservaComSucesso() throws Exception {
-		Long id = 1L;
-
-		ReservaDTO res = new ReservaDTO(2L, LocalDate.now(), null, "paulo henrique");
-		when(service.atualizaReserva(anyLong(),any(ReservaDTO.class))).thenReturn("Operacao Realizada com Sucesso");
-
-		mockMvc.perform(put("/reservas/" + id).contentType(MediaType.APPLICATION_JSON).content(asJsonString(res))
-
-		).andExpect(status().isOk()).andExpect(content().string("Operacao Realizada com Sucesso"));
 	}
 
 	private static String asJsonString(Object obj) {

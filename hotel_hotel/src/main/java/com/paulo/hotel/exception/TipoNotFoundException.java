@@ -13,7 +13,7 @@ public class TipoNotFoundException extends RuntimeException{
 	public TipoNotFoundException(String tipo) {
 		// TODO Auto-generated constructor stub
 	
-	super(String.format("Tipo %d not found ",tipo));
+	super(String.format("Tipo %s not found ",tipo));
 	
 	}
 }

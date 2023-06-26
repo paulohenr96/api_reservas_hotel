@@ -21,6 +21,10 @@ public class Mapper {
 			reservaDTO.setCheckinDate(reserva.getCheckinDate());
 
 		}
+		if (reserva.getValor()!=null) {
+			reservaDTO.setValor(reserva.getValor());
+		}
+		
 		if (reserva.getCheckoutDate()!=null) {
 			reservaDTO.setCheckoutDate(reserva.getCheckoutDate());
 

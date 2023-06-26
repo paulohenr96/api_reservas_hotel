@@ -115,7 +115,9 @@ public class QuartoControllerTest {
 		
 		
 		mockMvc.perform(get("/quartos/disponiveis/")
-				.param("data", data)
+				.param("checkinDate", data)
+				.param("checkoutDate", dataOut)
+
 				.param("page", "0")
 				.param("size","3"))
 				.andExpect(status().isOk())

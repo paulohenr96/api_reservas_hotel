@@ -58,7 +58,7 @@ public class QuartoController {
 
 	}
 
-	@GetMapping("/disponiveis/")
+	@GetMapping("/disponiveis")
 	@ApiOperation("Todos os quartos disponiveis na data")
 	public ResponseEntity<Page<QuartoDTO>> findAllQuartosDisponiveis(
 			@ApiParam("Data no formato dd/MM/yyyy") @RequestParam(name = "checkinDate", required = true) String checkinDate,

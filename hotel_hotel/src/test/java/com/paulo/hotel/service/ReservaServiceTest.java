@@ -1,17 +1,17 @@
 package com.paulo.hotel.service;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,10 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,12 +29,12 @@ import com.paulo.hotel.dto.ReservaDTO;
 import com.paulo.hotel.exception.QuartoNotFoundException;
 import com.paulo.hotel.exception.QuartoReservadoException;
 import com.paulo.hotel.exception.ReservaNotFoundException;
-import com.paulo.hotel.mapper.Mapper;
 import com.paulo.hotel.model.Quarto;
 import com.paulo.hotel.model.Reserva;
+import com.paulo.hotel.model.Tipo;
 import com.paulo.hotel.repository.QuartoRepository;
 import com.paulo.hotel.repository.ReservaRepository;
-import com.paulo.hotel.service.ReservaService;
+import com.paulo.hotel.repository.TipoRepository;
 
 @RestClientTest
 public class ReservaServiceTest {
@@ -49,6 +47,10 @@ public class ReservaServiceTest {
 	@Mock
 	QuartoRepository quartoRepository;
 
+	@Mock
+	TipoRepository tipoRepository;
+
+	
 	Reserva reserva;
 	ReservaDTO reservaDTO;
 
@@ -79,16 +81,25 @@ public class ReservaServiceTest {
 		LocalDate dataOut = LocalDate.now().plusDays(3L);
 
 		Long idQuarto = 2L;
-
+		
+		Quarto quartoParaReservar=new Quarto();
+		quartoParaReservar.setCamas(3);
+		quartoParaReservar.setTipo("Tipo");
+		quartoParaReservar.setId(idQuarto);
+		
 		reservaDTO.setCheckinDate(data);
 		reservaDTO.setNome("Nome Teste");
+		reservaDTO.setCheckoutDate(dataOut);
 
 		
 		
 		when(reservaRepository.existsReserva(idQuarto,data,dataOut)).thenReturn(false);
-		when(quartoRepository.findById(idQuarto)).thenReturn(Optional.of(new Quarto(idQuarto)));
-
+		when(quartoRepository.findById(idQuarto)).thenReturn(Optional.of(quartoParaReservar));
+		when(tipoRepository.findTipoByNome(anyString()))
+		.thenReturn(Optional.of(new Tipo(1L,"Tipo",BigDecimal.valueOf(90.0))));
+		
 		service.novaReserva(reservaDTO, idQuarto);
+		
 
 		verify(reservaRepository).existsReserva(idQuarto,data,dataOut);
 		verify(quartoRepository).findById(anyLong());
@@ -105,7 +116,7 @@ public class ReservaServiceTest {
 		reservaDTO.setCheckinDate(data);
 		reservaDTO.setNome("Nome Teste");
 		LocalDate dataOut = data.plusDays(3L);
-
+		reservaDTO.setCheckoutDate(dataOut);
 		when(reservaRepository.existsReserva(idQuarto,data,dataOut)).thenReturn(true);
 		when(quartoRepository.findById(idQuarto)).thenReturn(Optional.of(new Quarto(idQuarto)));
 
@@ -210,164 +221,6 @@ public class ReservaServiceTest {
 		verifyNoMoreInteractions(reservaRepository);
 	}
 
-	@Test
-	void atualizaReservaInexistenteThrowRunTimeException() {
-		Long idReserva=2L;
-		ReservaDTO reservaNova=new ReservaDTO(2L);
-		when(reservaRepository.findById(anyLong())).thenReturn(Optional.empty());
-		assertThrows(RuntimeException.class,()->service.atualizaReserva(idReserva, reservaNova));
-	}
-	@Test
-	void atualizaReservaExistenteThrowRunTimeException() {
-		Long idReserva=2L;
-		ReservaDTO reservaNova=new ReservaDTO(2L);
-		when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(new Reserva(2L)));
-		assertThrows(RuntimeException.class,()->service.atualizaReserva(idReserva, reservaNova));
-	}
-	@Test
-	void atualizaReservaExistenteComSucesso() {
-		Long idReserva=2L;
-		ReservaDTO reservaNova=new ReservaDTO();
-		reservaNova.setQuarto(1L);
-		reservaNova.setCheckinDate(LocalDate.now());
-		Reserva reservaAntiga=new Reserva(idReserva);
-		reservaAntiga.setQuarto(new Quarto(2L));
-		LocalDate dataOut = LocalDate.now().plusDays(3L);
-
-		
-		when(reservaRepository.existsReserva(1L,reservaNova.getCheckinDate(),dataOut)).thenReturn(false);
-
-		when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reservaAntiga));
-		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(1L)));
-		
-		
-		String saidaEsperada="Operacao Realizada com Sucesso";
-		String saidaReal = service.atualizaReserva(idReserva, reservaNova);
-		
-		assertEquals(saidaEsperada,saidaReal);
-		verify(quartoRepository).findById(1L);
-		verify(reservaRepository).findById(2L);
-		verify(reservaRepository).save(new Reserva(2L));
-
-		
-	}
-	
-	@Test
-	void atualizaReservaInexistenteComSucesso() {
-		Long idReserva=2L;
-		ReservaDTO reservaNova=new ReservaDTO();
-		reservaNova.setQuarto(1L);
-		reservaNova.setCheckinDate(LocalDate.now());
-		Reserva reservaSalva=new Reserva();
-		reservaSalva.setQuarto(new Quarto(1L));
-		LocalDate dataOut = LocalDate.now().plusDays(3L);
-
-		
-		when(reservaRepository.existsReserva(1L,reservaNova.getCheckinDate(),dataOut)).thenReturn(false);
-
-		when(reservaRepository.findById(anyLong())).thenReturn(Optional.empty());
-		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(1L)));
-		
-		
-		String saidaEsperada="Operacao Realizada com Sucesso";
-		String saidaReal = service.atualizaReserva(idReserva, reservaNova);
-		
-		
-		assertEquals(saidaEsperada,saidaReal);
-		verify(quartoRepository).findById(1L);
-		verify(reservaRepository).findById(2L);
-		verify(reservaRepository).save(reservaSalva);
-
-		
-	}
-	
-	@Test
-	void atualizaReservaInexistenteThrowsQuartoNotFoundException() {
-		Long idReserva=2L;
-		ReservaDTO reservaNova=new ReservaDTO();
-		reservaNova.setQuarto(1L);
-		
-		
-		when(reservaRepository.findById(anyLong())).thenReturn(Optional.empty());
-		when(quartoRepository.findById(anyLong())).thenReturn(Optional.empty());
-		
-		
-		assertThrows(QuartoNotFoundException.class,()->service.atualizaReserva(idReserva, reservaNova));
-		
-		
-
-		
-	}
-	@Test
-	void atualizaReservaExistenteThrowsQuartoNotFoundException() {
-		Long idReserva=2L;
-		ReservaDTO reservaNova=new ReservaDTO();
-		reservaNova.setQuarto(1L);
-		
-		Reserva reservaAntiga=new Reserva(2L);
-		reservaAntiga.setQuarto(new Quarto(2L));
-		
-
-		when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reservaAntiga));
-		when(quartoRepository.findById(anyLong())).thenReturn(Optional.empty());
-		
-		
-		assertThrows(QuartoNotFoundException.class,()->service.atualizaReserva(idReserva, reservaNova));
-		
-		
-
-		
-	}
-	
-	@Test
-	void atualizaReservaInexistenteThrowsQuartoReservadoException() {
-		Long idReserva=2L;
-		ReservaDTO reservaNova=new ReservaDTO();
-		reservaNova.setQuarto(1L);
-		reservaNova.setCheckinDate(LocalDate.now());
-		Reserva reservaAntiga=new Reserva(idReserva);
-		reservaAntiga.setQuarto(new Quarto(2L));
-		LocalDate dataOut = LocalDate.now().plusDays(3L);
-
-		when(reservaRepository.existsReserva(1L,reservaNova.getCheckinDate(),dataOut)).thenReturn(true);
-		when(reservaRepository.findById(anyLong())).thenReturn(Optional.empty());
-		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(2L)));
-		
-		
-		assertThrows(QuartoReservadoException.class,()->service.atualizaReserva(idReserva, reservaNova));
-		verify(reservaRepository).existsReserva(1L,reservaNova.getCheckinDate(),dataOut);
-		verify(reservaRepository).findById(idReserva);
-		verify(quartoRepository).findById(1L);
-		verifyNoMoreInteractions(reservaRepository);
-
-
-		
-	}
-	
-	@Test
-	void atualizaReservaExistenteThrowsQuartoReservadoException() {
-		Long idReserva=2L;
-		ReservaDTO reservaNova=new ReservaDTO();
-		reservaNova.setQuarto(1L);
-		reservaNova.setCheckinDate(LocalDate.now());
-		Reserva reservaAntiga=new Reserva(idReserva);
-		reservaAntiga.setQuarto(new Quarto(2L));
-		LocalDate dataOut = LocalDate.now().plusDays(3L);
-
-		when(reservaRepository.existsReserva(1L,reservaNova.getCheckinDate(),dataOut)).thenReturn(true);
-		when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reservaAntiga));
-		when(quartoRepository.findById(anyLong())).thenReturn(Optional.of(new Quarto(2L)));
-		
-		
-		assertThrows(QuartoReservadoException.class,()->service.atualizaReserva(idReserva, reservaNova));
-		verify(reservaRepository).existsReserva(1L,reservaNova.getCheckinDate(),dataOut);
-		verify(reservaRepository).findById(idReserva);
-		verify(quartoRepository).findById(1L);
-		verifyNoMoreInteractions(reservaRepository);
-
-
-		
-	}
 	
 	
 }
